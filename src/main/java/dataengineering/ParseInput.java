@@ -1,10 +1,9 @@
 package dataengineering;
 
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.util.Collector;
 
 
@@ -20,7 +19,7 @@ public class ParseInput{
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // get input dataEngineering\\src\\main
-        DataSet<String> text = env.readTextFile("src/main/resources/HepPh");
+        DataSet<String> text = env.readTextFile("src/main/resources/datasets/HepPh");
 
 
         DataSet<Tuple3<Integer,Integer,Integer>> publication = text
