@@ -18,6 +18,7 @@ public class ParseInput{
    private DataSet<Tuple3<Integer, Integer, Integer>> edgeSet;
    private DataSet<Tuple2<Integer, NullValue>> verticeSet;
 
+
     public ParseInput(String filelocations) throws Exception {
 
         // set up the execution environment
