@@ -77,6 +77,7 @@ public class ParseInput{
             }
         }
 
+
     private static class LineSplitterVertices implements FlatMapFunction<Tuple3<Integer,Integer,Integer>,Tuple2<Integer,NullValue>> {
 
         @Override
