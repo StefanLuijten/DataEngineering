@@ -36,6 +36,11 @@
             <artifactId>flink-gelly_2.11</artifactId>
             <version>0.10.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>gephi-toolkit</artifactId>
+            <version>0.9.1</version>
+        </dependency>
     </dependencies>
 
     <build>
