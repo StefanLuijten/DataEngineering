@@ -1,33 +1,68 @@
 package dataengineering;
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.types.NullValue;
-import org.graphstream.graph.*;
+import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
+
+import java.util.List;
 
 /**
  * Created by Stefan on 07-Mar-16.
  */
 public class GraphVisualization {
 
-    public Graph graph = new SingleGraph("Tutorial 1");
+    public static Graph graph = new SingleGraph("Tutorial 1");
 
-    public GraphVisualization(DataSet<Tuple2<Integer, NullValue>> verticeSet, DataSet<Tuple3<Integer, Integer, Integer>> edgeSet) throws Exception {
+    public GraphVisualization(List<Tuple2<Integer, NullValue>> verticeSet, List<Tuple3<Integer, Integer, Integer>> edgeSet) throws Exception {
 
-        verticeSet.map(new VertexAdder());
-     //   edgeSet.map(new EdgeAdder());
+        System.out.println("Mapping...");
+//        verticeSet.map(new VertexAdder());
+//        edgeSet.map(new EdgeAdder());
+        for(Tuple2<Integer, NullValue> tuple : verticeSet) {
+            String id = Integer.toString(tuple.f0);
+            try {
+                graph.addNode(Integer.toString(tuple.f0));
+            } catch(org.graphstream.graph.IdAlreadyInUseException e) {
+                System.out.println(e);
+            }
+        }
+        for(Tuple3<Integer, Integer, Integer> tuploe: edgeSet) {
+            try {
+                graph.addEdge((tuploe.f0.toString()+tuploe.f1.toString()), tuploe.f0.toString(), tuploe.f1.toString());
+            } catch(Exception e) {
+                System.out.println(e);
+            }
+
+        }
+
+        System.out.println("Mapping done");
+//        verticeSet.collect();
+//        edgeSet.collect();
+//        graph.getNodeSet();
+//        graph.addNode(Integer.toString(1));
+//        graph.addNode(Integer.toString(2));
+//        graph.addNode(Integer.toString(3));
+
+//        graph.display();
+
+
+    }
+
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public void displayGraph() {
         graph.display();
-
     }
 
     public class VertexAdder implements MapFunction<Tuple2<Integer, NullValue>, Object> {
         @Override
         public NullValue map(Tuple2<Integer, NullValue> vertexSet) throws Exception {
-            
-          //  graph.addNode(Integer.toString(vertexSet.f0));
+            graph.addNode(Integer.toString(vertexSet.f0));
             return NullValue.getInstance();
         }
     }

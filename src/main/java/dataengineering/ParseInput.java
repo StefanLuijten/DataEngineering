@@ -1,6 +1,5 @@
 package dataengineering;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -8,8 +7,6 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.types.NullValue;
 import org.apache.flink.util.Collector;
-
-import static org.apache.flink.types.NullValue.getInstance;
 
 
 public class ParseInput{
@@ -19,10 +16,12 @@ public class ParseInput{
    private DataSet<Tuple2<Integer, NullValue>> verticeSet;
 
 
-    public ParseInput(String filelocations) throws Exception {
+    // set up the execution environment
+    private ExecutionEnvironment env;
 
-        // set up the execution environment
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+    public ParseInput(String filelocations, ExecutionEnvironment env) throws Exception {
+        this.env = env;
 
         // retrieve data from given file location
 
