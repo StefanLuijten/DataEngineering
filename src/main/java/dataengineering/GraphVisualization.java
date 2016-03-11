@@ -21,19 +21,25 @@ public class GraphVisualization {
         System.out.println("Mapping...");
 //        verticeSet.map(new VertexAdder());
 //        edgeSet.map(new EdgeAdder());
+        int i = 0;
+        int max = 100;
         for(Tuple2<Integer, NullValue> tuple : verticeSet) {
             String id = Integer.toString(tuple.f0);
             try {
                 graph.addNode(Integer.toString(tuple.f0));
+                if(i >= max) {
+                    break;
+                }
+                i++;
             } catch(org.graphstream.graph.IdAlreadyInUseException e) {
-                System.out.println(e);
+//                System.out.println(e);
             }
         }
         for(Tuple3<Integer, Integer, Integer> tuploe: edgeSet) {
             try {
                 graph.addEdge((tuploe.f0.toString()+tuploe.f1.toString()), tuploe.f0.toString(), tuploe.f1.toString());
             } catch(Exception e) {
-                System.out.println(e);
+//                System.out.println(e);
             }
 
         }
