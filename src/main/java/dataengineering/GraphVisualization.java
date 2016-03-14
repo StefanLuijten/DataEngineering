@@ -3,6 +3,7 @@ package dataengineering;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.graph.Vertex;
 import org.apache.flink.types.NullValue;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -16,14 +17,14 @@ public class GraphVisualization {
 
     public static Graph graph = new SingleGraph("Tutorial 1");
 
-    public GraphVisualization(List<Tuple2<Integer, NullValue>> verticeSet, List<Tuple3<Integer, Integer, Integer>> edgeSet) throws Exception {
+    public GraphVisualization(List<Vertex<Integer, Long>> verticeSet, List<Tuple3<Integer, Integer, Double>> edgeSet) throws Exception {
 
         System.out.println("Mapping...");
 //        verticeSet.map(new VertexAdder());
 //        edgeSet.map(new EdgeAdder());
         int i = 0;
-        int max = 100;
-        for(Tuple2<Integer, NullValue> tuple : verticeSet) {
+        int max = 100000;
+        for(Vertex<Integer, Long> tuple : verticeSet) {
             String id = Integer.toString(tuple.f0);
             try {
                 graph.addNode(Integer.toString(tuple.f0));
@@ -35,7 +36,7 @@ public class GraphVisualization {
 //                System.out.println(e);
             }
         }
-        for(Tuple3<Integer, Integer, Integer> tuploe: edgeSet) {
+        for(Tuple3<Integer, Integer, Double> tuploe: edgeSet) {
             try {
                 graph.addEdge((tuploe.f0.toString()+tuploe.f1.toString()), tuploe.f0.toString(), tuploe.f1.toString());
             } catch(Exception e) {
