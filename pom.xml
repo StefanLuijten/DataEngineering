@@ -42,6 +42,11 @@
             <version>1.3</version>
             <optional>false</optional>
         </dependency>
+        <dependency>
+            <groupId>1</groupId>
+            <artifactId>dataengineering</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>

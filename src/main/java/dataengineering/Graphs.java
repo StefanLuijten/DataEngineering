@@ -1,5 +1,6 @@
 package dataengineering;
 
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -45,5 +46,21 @@ public class Graphs {
 
     public Graph<Integer, NullValue, Integer> getGraph() {
         return graph;
+    }
+
+    public Graph<Integer, NullValue, Integer> getEdgesPerNode(final Integer nodeID){
+        return graph.subgraph(new FilterFunction<Vertex<Integer, NullValue>>() {
+            @Override
+            public boolean filter(Vertex<Integer, NullValue> integerNullValueVertex) throws Exception {
+                return true;
+            }
+        }, new FilterFunction<Edge<Integer, Integer>>() {
+            @Override
+            public boolean filter(Edge<Integer, Integer> integerIntegerEdge) throws Exception {
+            System.out.println("EDGE:" + integerIntegerEdge.getSource() + " "  +integerIntegerEdge.getTarget());
+                System.out.println((integerIntegerEdge.getSource().equals(nodeID)) || (integerIntegerEdge.getTarget().equals(nodeID)));
+                return ((integerIntegerEdge.getSource().equals(nodeID)) || (integerIntegerEdge.getTarget().equals(nodeID)));
+            }
+        });
     }
 }

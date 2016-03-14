@@ -45,6 +45,9 @@ public class ParseInput{
 
         // parse the edges set to retrieve all vertices and store them.
         this.setVerticeSet(this.getEdgeSet().flatMap(new LineSplitterVertices()));
+
+        // remove duplicate vertices
+        this.verticeSet = verticeSet.distinct();
     }
 
     public DataSet<Tuple3<Integer, Integer, Integer>> getEdgeSet() {
