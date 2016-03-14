@@ -60,6 +60,16 @@ public class Main {
         System.out.println("# Vertices: " + vertices.size());
         System.out.println("# Edges: " + edges.size());
 
+
+        EvolutionAuthor evolution = new EvolutionAuthor(true,graph);
+
+        int[] persons = {5,6,123,22233};
+        evolution.setPersons(persons);
+        //  evolution.setPersonsRandom(3);
+
+        evolution.showGraph();
+
+
         gv.displayGraph();
 
     }
