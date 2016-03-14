@@ -57,9 +57,7 @@ public class Graphs {
         }, new FilterFunction<Edge<Integer, Integer>>() {
             @Override
             public boolean filter(Edge<Integer, Integer> integerIntegerEdge) throws Exception {
-            System.out.println("EDGE:" + integerIntegerEdge.getSource() + " "  +integerIntegerEdge.getTarget());
-                System.out.println((integerIntegerEdge.getSource().equals(nodeID)) || (integerIntegerEdge.getTarget().equals(nodeID)));
-                return ((integerIntegerEdge.getSource().equals(nodeID)) || (integerIntegerEdge.getTarget().equals(nodeID)));
+                  return ((integerIntegerEdge.getSource().equals(nodeID)) || (integerIntegerEdge.getTarget().equals(nodeID)));
             }
         });
     }
