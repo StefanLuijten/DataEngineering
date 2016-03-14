@@ -3,7 +3,6 @@ package dataengineering;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
-import org.apache.flink.types.NullValue;
 import org.knowm.xchart.ChartBuilder_XY;
 import org.knowm.xchart.Chart_XY;
 import org.knowm.xchart.SwingWrapper;
@@ -53,16 +52,16 @@ public class EvolutionAuthor {
     }
 
     private void retrievePublicationsForPerson(Integer nodeID) throws Exception {
-        Graph<Integer, NullValue, Integer> subGraph = graph.getEdgesPerNode(nodeID);
-        DataSet<Edge<Integer, Integer>> edges = subGraph.getEdges();
-        List<Integer> xValues = new ArrayList<>();
+        Graph<Integer, Long, Double> subGraph = graph.getEdgesPerNode(nodeID);
+        DataSet<Edge<Integer, Double>> edges = subGraph.getEdges();
+        List<Double> xValues = new ArrayList<>();
         List<Integer> yValues = new ArrayList<>();
         Integer counter = 1;
-        Integer minDate = 2100000000;
+        Double minDate = 2100000000.0;
 
 
-        for (Edge<Integer, Integer> edge : edges.collect()) {
-            Integer weight = edge.getValue();
+        for (Edge<Integer, Double> edge : edges.collect()) {
+            Double weight = edge.getValue();
             if (weight < 1015887600) {
                 xValues.add(weight);
                 if (weight < minDate) {
@@ -101,13 +100,13 @@ public class EvolutionAuthor {
         new SwingWrapper(chart).displayChart();
     }
 
-    private List<Date> transferToDate(List<Integer> integerList) {
+    private List<Date> transferToDate(List<Double> integerList) {
 
         SimpleDateFormat format = new SimpleDateFormat("MMM dd,yyyy  hh:mm");
 
         List<Date> xAxisDateList = new ArrayList<Date>(integerList.size());
         for (Integer i = 0; i < integerList.size(); i++) {
-            Date date = new java.util.Date((long) integerList.get(i) * 1000);
+            Date date = new java.util.Date( Math.round(integerList.get(i) * 1000));
             xAxisDateList.add(date);
         }
         chart.getStyler().setDatePattern("dd-MMM-YYYY");
