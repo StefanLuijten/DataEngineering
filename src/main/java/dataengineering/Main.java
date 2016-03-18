@@ -31,7 +31,7 @@ public class Main {
         EvolutionAuthor evolution = new EvolutionAuthor(true,graph);
 
         int[] persons = {5,6,123,22233};
-        evolution.setPersons(persons);
+        evolution.createGraph(persons);
         //  evolution.setPersonsRandom(3);
 
         evolution.showGraph();
