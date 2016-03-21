@@ -29,6 +29,12 @@ public class Main {
         // Visualize publications per Author
         EvolutionAuthor evolution = new EvolutionAuthor(true, graph);
 
+<<<<<<< HEAD
+=======
+        int[] persons = {5,6,123,22233};
+        evolution.createGraph(persons);
+        //  evolution.setPersonsRandom(3);
+>>>>>>> 82bb2e4f1e00ef698e54dee0cd7396396b69810b
 
         int[] persons = {4,5};
         int[] randPersons = evolution.getRandomPersons(500);
