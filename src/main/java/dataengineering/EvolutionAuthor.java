@@ -1,11 +1,9 @@
 package dataengineering;
 
+import org.apache.avro.generic.GenericData;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
-import org.knowm.xchart.ChartBuilder_XY;
-import org.knowm.xchart.Chart_XY;
-import org.knowm.xchart.SwingWrapper;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,24 +13,16 @@ import java.util.*;
  */
 public class EvolutionAuthor {
 
-    private Chart_XY chart;
+
     private Graphs graph;
     private Boolean relative;
     private ArrayList<HashMap<Integer,Double>> allPublications = new ArrayList<>();
 
     public EvolutionAuthor(Boolean relative, Graphs inputGraph) {
-
-        this.chart = new ChartBuilder_XY().width(1080).height(900).xAxisTitle("Date").yAxisTitle("Number of publications").build();
         this.graph = inputGraph;
         this.relative = relative;
     }
 
-    /**
-     * Create a graph for numberOfPeople random authors.
-     *
-     * @param numberOfPeople
-     * @throws Exception
-     */
     public int[] getRandomPersons(Integer numberOfPeople) throws Exception {
         long numberOfVertices = graph.getGraph().numberOfVertices();
         Integer numberOfVerticesMax = (int) numberOfVertices;
@@ -40,16 +30,12 @@ public class EvolutionAuthor {
         return ints;
     }
 
-    /**
-     * Create a graph for a preselected group of authors, which are provided by an integer array
-     *
-     * @param persons
-     * @throws Exception
-     */
     public void createGraph(int[] persons) throws Exception {
+        XChart chart = new XChart("Number of publications", "Date", "Number of publications");
         for (Integer person : persons) {
-            addSeriesToChart(retrievePublicationsForPerson(person), person);
+            addSeriesToChart(retrievePublicationsForPerson(person), person,chart);
         }
+        chart.showGraph();
     }
 
     private List<Double> retrievePublicationsForPerson(Integer nodeID) throws Exception {
@@ -79,7 +65,7 @@ public class EvolutionAuthor {
         return xValues;
     }
 
-    public void addSeriesToChart(List<Double> publicationTimes, Integer nodeID) {
+    public void addSeriesToChart(List<Double> publicationTimes, Integer nodeID, XChart chart) {
         List<Double> xValues = publicationTimes;
 
         List<Integer> yValues = new ArrayList<>();
@@ -92,23 +78,15 @@ public class EvolutionAuthor {
         if (!xValues.isEmpty()) {
 
             if (!relative) {
-                chart.addSeries(nodeID.toString(), transferToDate(xValues), yValues);
+                chart.addDateSeries(nodeID.toString(), transferToDate(xValues), yValues);
             } else {
-                chart.addSeries(nodeID.toString(), transferToYear(xValues), yValues);
+                chart.addIntegerSeries(nodeID.toString(), transferToYear(xValues), yValues);
             }
         }
     }
 
 
-    public void showGraph() {
-        if (relative) {
-            chart.setXAxisTitle("Relative time");
-            chart.setTitle("Relative chart");
-        } else {
-            chart.setTitle("Absolute chart");
-        }
-        new SwingWrapper(chart).displayChart();
-    }
+
 
 
     private List<Date> transferToDate(List<Double> integerList) {
@@ -120,7 +98,7 @@ public class EvolutionAuthor {
             Date date = new java.util.Date(Math.round(integerList.get(i) * 1000));
             xAxisDateList.add(date);
         }
-        chart.getStyler().setDatePattern("dd-MMM-YYYY");
+
         return xAxisDateList;
     }
 
@@ -160,25 +138,44 @@ public class EvolutionAuthor {
     private HashMap<Integer,Double> combineHashMaps(ArrayList<HashMap<Integer,Double>> all){
          HashMap<Integer,Double> averagePublications = new HashMap<>();
 
+        // Merge all individual publications a year to one for all authors
         for (HashMap <Integer,Double> person : all){
             person.forEach((k, v) -> averagePublications.merge(k, v, (v1, v2) -> v1 + v2));
         }
 
+
+        // Calculate average
         for(Map.Entry<Integer, Double> e : averagePublications.entrySet()) {
-            System.out.println(averagePublications);
-            averagePublications.put(e.getKey(), (e.getValue() / averagePublications.size()));
-            System.out.println(averagePublications);
+            averagePublications.put(e.getKey(), (e.getValue() / all.size()));
         }
+
+
         return averagePublications;
     }
 
-    public void getAverage(int[] persons) throws Exception {
+
+    public void createAveragesGraph (int [] persons) throws Exception {
+
+        HashMap<Integer,Double> combinedHashMap = getAverage(persons);
+        List<Double> times = new ArrayList<>();
+        List<Double> averages = new ArrayList();
+        System.out.println(combinedHashMap);
+        for (int i = 1; i <= combinedHashMap.size(); i++){
+            System.out.println("loop");
+            times.add((double) i);
+            averages.add(combinedHashMap.get(i));
+        }
+        System.out.println(averages);
+        XChart averageChart = new XChart("Averages per year", "Relative time(years)","Number of publications");
+        averageChart.addDoubleSeries("Averages per year",times,averages);
+        averageChart.showGraph();
+    }
+
+    public HashMap<Integer,Double> getAverage(int[] persons) throws Exception {
         for (Integer person : persons) {
             allPublications.add(getNumberOfPublicationPerYear(retrievePublicationsForPerson(person)));
         }
-
-
-        System.out.println(combineHashMaps(allPublications));
+        return combineHashMaps(allPublications);
     }
 }
 

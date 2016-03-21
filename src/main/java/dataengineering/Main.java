@@ -13,28 +13,28 @@ public class Main {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // input parser
-        ParseInput input = new ParseInput("test", env);
+        ParseInput input = new ParseInput("HepPh", env);
 
         // Gelly graph
         Graphs graph = new Graphs(input, env);
-        System.out.println(graph.getGraph().numberOfVertices());
 
-        // Community detection
-        dataengineering.CommunityDetection cd = new dataengineering.CommunityDetection(graph);
+          // Community detection
+//        dataengineering.CommunityDetection cd = new dataengineering.CommunityDetection(graph);
 
-        // Visualize community detection
-        GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges());
-        gv.colorCommunities();
-        gv.displayGraph();
+          // Visualize community detection
+//        GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges());
+//        gv.colorCommunities();
+//        gv.displayGraph();
 
-        // Visualize publications
-        EvolutionAuthor evolution = new EvolutionAuthor(true,graph);
+        // Visualize publications per Author
+        EvolutionAuthor evolution = new EvolutionAuthor(true, graph);
 
-        int[] persons = {5,6,123,22233};
-        evolution.setPersons(persons);
+
+        int[] persons = {4,5};
+        int[] randPersons = evolution.getRandomPersons(500);
+
+      //  evolution.createGraph(randPersons);
         //  evolution.setPersonsRandom(3);
-
-        evolution.showGraph();
-
+        evolution.createAveragesGraph(randPersons);
     }
 }

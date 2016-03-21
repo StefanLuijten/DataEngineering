@@ -19,8 +19,8 @@ public class Graphs {
         graph = Graph.fromTupleDataSet(input.getVerticeSet(),input.getEdgeSet(),env);
 
         // Print stats
-        System.out.println("# Vertices: " + graph.numberOfVertices());
-        System.out.println("# Edges: " + graph.numberOfEdges());
+//        System.out.println("# Vertices: " + graph.numberOfVertices());
+//        System.out.println("# Edges: " + graph.numberOfEdges());
 
     }
 
