@@ -14,18 +14,23 @@ public class CommunityDetection {
 
     private Graph<Integer, Long, Double> result;
     private HashMap<Long, Integer> community_map = new HashMap<Long, Integer>();
+    private long vertices;
+    private long edges;
 
     public CommunityDetection(Graphs graph) throws Exception {
 
         // Max number op hops: 1, Delta: 0.5
         result = graph.getGraph().run(new org.apache.flink.graph.library.CommunityDetection<Integer>(1, 0.5));
-        createCommunityMap();
 
     }
 
+    public void calcStats() throws Exception {
+        createCommunityMap();
+        vertices = result.numberOfVertices();
+        edges = result.numberOfEdges();
+    }
+
     public void printStats() throws Exception {
-        long vertices = result.numberOfVertices();
-        long edges = result.numberOfEdges();
 
         // Print stats
         System.out.println("# Vertices: " + vertices);
@@ -36,7 +41,7 @@ public class CommunityDetection {
     }
 
 
-    private void createCommunityMap() throws Exception {
+    public void createCommunityMap() throws Exception {
         // Count number of nodes within community and color the graph
         for (Vertex<Integer, Long> vertex : getVertices()) {
             Long c = vertex.getValue();

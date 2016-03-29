@@ -1,7 +1,6 @@
 package dataengineering;
 
 import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -58,8 +57,8 @@ public class Graphs {
     }
 
     // get subgraphs with only edges which were created before timestamp
-    private Graph getSubgraphUntilTimestamp(final long timestamp) {
-        return graph.subgraph(new FilterFunction<Vertex<Integer, Long>>() {
+    private Graph getSubgraphUntilTimestamp(final long timestamp) throws Exception {
+        Graph tempGraph = graph.subgraph(new FilterFunction<Vertex<Integer, Long>>() {
             @Override
             public boolean filter(Vertex<Integer, Long> integerNullValueVertex) throws Exception {
                 return true;
@@ -70,13 +69,26 @@ public class Graphs {
                 return ((integerIntegerEdge.getValue() < (timestamp)));
             }
         });
+        return filterNodesWithoutEdges(tempGraph);
     }
 
-    private Graph filterNodesWithoutEdges() {
+    // remove orphans (nodes without edges)
+    private Graph filterNodesWithoutEdges(Graph graph) throws Exception {
+        DataSet<Tuple2<Integer, Long>> degrees = graph.getDegrees();
+        DataSet<Tuple2<Integer, Long>> nodesWithoutEdges = degrees.filter(new FilterFunction<Tuple2<Integer, Long>>() {
+            @Override
+            public boolean filter(Tuple2<Integer, Long> integerLongTuple2) throws Exception {
+                return integerLongTuple2.f1.equals(0l);
+            }
+        });
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        for (Tuple2<Integer, Long> node : nodesWithoutEdges.collect()) {
+            ids.add(node.f0);
+        }
         return graph.filterOnVertices(new FilterFunction<Vertex<Integer, Long>>() {
             @Override
-            public boolean filter(Vertex<Integer, Long> integerNullValueVertex) throws Exception {
-                return true;
+            public boolean filter(Vertex<Integer, Long> integerLongVertex) throws Exception {
+                return !(ids.contains(integerLongVertex.getId()));
             }
         });
     }
@@ -86,20 +98,11 @@ public class Graphs {
         // Reduce to min edge per vertex
         DataSet<Tuple2<Integer, Double>> minWeights = graph.reduceOnEdges(new SelectMinWeight(), EdgeDirection.ALL);
         // reduce to lowest edge overall
-        DataSet<Tuple2<Integer, Double>> reducedMinWeights = minWeights.reduce(new ReduceFunction<Tuple2<Integer, Double>>() {
-            @Override
-            public Tuple2<Integer, Double> reduce(Tuple2<Integer, Double> integerDoubleTuple2, Tuple2<Integer, Double> t1) throws Exception {
-                if(Math.min(integerDoubleTuple2.f1, t1.f1) == t1.f1) {
-                    return t1;
-                } else {
-                    return integerDoubleTuple2;
-                }
-            }
-        });
+        DataSet<Tuple2<Integer, Double>> reducedMinWeights = minWeights.min(1);
         long minWeight = Math.round(reducedMinWeights.collect().get(0).f1);
 
         ArrayList<Graphs> subgraphs = new ArrayList<>();
-        for(int i = 1; i < 10; i++) {
+        for(int i = 1; i < 9; i++) {
             // create acculumative subgraphs for each year
             subgraphs.add(new Graphs(getSubgraphUntilTimestamp(minWeight + (i*31556926))));
         }
