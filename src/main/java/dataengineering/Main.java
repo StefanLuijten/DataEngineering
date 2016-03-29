@@ -20,12 +20,15 @@ public class Main {
         System.out.println(graph.getGraph().numberOfVertices());
 
         // Community detection evolution
-        CommunityDetectionEvolution cde = new CommunityDetectionEvolution(graph);
+        CommunityDetectionEvolution cd = new CommunityDetectionEvolution(graph);
 
         // Visualize community detection
-//        GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges());
-//        gv.colorCommunities();
-//        gv.displayGraph();
+        boolean _gv = false;
+        if(_gv) {
+            GraphVisualization gv = new GraphVisualization(cd.getCommunityDetection().getVertices(), cd.getCommunityDetection().getEdges());
+            gv.colorCommunities();
+            gv.displayGraph();
+        }
 
         // Visualize publications per Author
         EvolutionAuthor evolution = new EvolutionAuthor(graph,140);

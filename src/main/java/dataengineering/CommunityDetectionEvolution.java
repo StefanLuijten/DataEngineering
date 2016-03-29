@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class CommunityDetectionEvolution {
 
     private Graphs graph;
+    private dataengineering.CommunityDetection cd;
     private ArrayList<Graphs> subgraphPerYearArray;
 
     public CommunityDetectionEvolution(Graphs graph) throws Exception {
@@ -17,8 +18,13 @@ public class CommunityDetectionEvolution {
 
         for(Graphs graph2 : subgraphPerYearArray) {
             // Community detection
-            dataengineering.CommunityDetection cd = new dataengineering.CommunityDetection(graph2);
+            this.cd = new dataengineering.CommunityDetection(graph2);
             cd.printStats();
         }
     }
+
+    public dataengineering.CommunityDetection getCommunityDetection() {
+        return cd;
+    }
+
 }
