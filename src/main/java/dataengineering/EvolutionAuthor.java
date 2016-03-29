@@ -1,6 +1,5 @@
 package dataengineering;
 
-import org.apache.avro.generic.GenericData;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
@@ -15,30 +14,56 @@ public class EvolutionAuthor {
 
 
     private Graphs graph;
-    private Boolean relative;
-    private ArrayList<HashMap<Integer,Double>> allPublications = new ArrayList<>();
+    private ArrayList<HashMap<Integer, Double>> allPublications = new ArrayList<>();
+    private static final String seasons[] = {
+            "Winter", "Winter",
+            "Spring", "Spring", "Spring",
+            "Summer", "Summer", "Summer",
+            "Fall", "Fall", "Fall",
+            "Winter"
+    };
+    private int[] persons;
 
-    public EvolutionAuthor(Boolean relative, Graphs inputGraph) {
+    public EvolutionAuthor(Graphs inputGraph, Integer number) throws Exception {
         this.graph = inputGraph;
-        this.relative = relative;
+        getRandomPersons(number);
     }
 
-    public int[] getRandomPersons(Integer numberOfPeople) throws Exception {
+    public boolean personAlreadyInList(int person) {
+        for (int i = 0; i < persons.length; i++) {
+            if (persons[i] == person) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void getRandomPersons(Integer numberOfPeople) throws Exception {
         long numberOfVertices = graph.getGraph().numberOfVertices();
         Integer numberOfVerticesMax = (int) numberOfVertices;
-        final int[] ints = new Random().ints(1, numberOfVerticesMax).distinct().limit(numberOfPeople).toArray();
-        return ints;
+        this.persons = new Random().ints(1, numberOfVerticesMax).distinct().limit(numberOfPeople).toArray();
     }
 
-    public void createGraph(int[] persons) throws Exception {
+    public void createGraph(boolean relative) throws Exception {
+        long numberOfVertices = graph.getGraph().numberOfVertices();
+        Integer numberOfVerticesMax = (int) numberOfVertices;
+
         XChart chart = new XChart("Number of publications", "Date", "Number of publications");
-        for (Integer person : persons) {
-            addSeriesToChart(retrievePublicationsForPerson(person), person,chart);
+        for (int i = 0; i < persons.length; i++) {
+            List<Double> publications = retrievePublicationsForPerson(persons[i], relative);
+            while (publications.isEmpty()) {
+                int newPerson = new Random().nextInt(numberOfVerticesMax) + 1;
+                if (!personAlreadyInList(newPerson)) {
+                    publications = retrievePublicationsForPerson(newPerson, relative);
+                    persons[i] = newPerson;
+                }
+            }
+            addSeriesToChart(publications, persons[i], chart, relative);
         }
         chart.showGraph();
     }
 
-    private List<Double> retrievePublicationsForPerson(Integer nodeID) throws Exception {
+    private List<Double> retrievePublicationsForPerson(Integer nodeID, boolean relative) throws Exception {
         Graph<Integer, Long, Double> subGraph = graph.getEdgesPerNode(nodeID);
         DataSet<Edge<Integer, Double>> edges = subGraph.getEdges();
         List<Double> xValues = new ArrayList<>();
@@ -47,28 +72,30 @@ public class EvolutionAuthor {
 
         for (Edge<Integer, Double> edge : edges.collect()) {
             Double weight = edge.getValue();
-               if (weight < 1015887600) {
+            if (weight < 1015887600) {
 
-            if (!xValues.contains(weight)) {
-                xValues.add(weight);
-                if (weight < minDate) {
-                    minDate = weight;
+                if (!xValues.contains(weight)) {
+                    xValues.add(weight);
+                    if (weight < minDate) {
+                        minDate = weight;
+                    }
                 }
             }
-                 }
         }
 
         if (relative) {
             xValues = makeTimeRelative(xValues, minDate);
         }
         Collections.sort(xValues);
+
+
         return xValues;
     }
 
-    public void addSeriesToChart(List<Double> publicationTimes, Integer nodeID, XChart chart) {
+    public void addSeriesToChart(List<Double> publicationTimes, Integer nodeID, XChart chart, boolean relative) {
         List<Double> xValues = publicationTimes;
-
         List<Integer> yValues = new ArrayList<>();
+
         Integer counter = 1;
         for (Integer i = 0; i < xValues.size(); i++) {
             yValues.add(counter);
@@ -76,7 +103,6 @@ public class EvolutionAuthor {
         }
 
         if (!xValues.isEmpty()) {
-
             if (!relative) {
                 chart.addDateSeries(nodeID.toString(), transferToDate(xValues), yValues);
             } else {
@@ -84,9 +110,6 @@ public class EvolutionAuthor {
             }
         }
     }
-
-
-
 
 
     private List<Date> transferToDate(List<Double> integerList) {
@@ -105,7 +128,7 @@ public class EvolutionAuthor {
     private List<Double> transferToYear(List<Double> integerList) {
         List<Double> xAxisDateList = new ArrayList<Double>(integerList.size());
         for (Integer i = 0; i < integerList.size(); i++) {
-           Double year = (integerList.get(i) / 31556926);
+            Double year = (integerList.get(i) / 31556926);
             xAxisDateList.add(year);
         }
         return xAxisDateList;
@@ -135,47 +158,118 @@ public class EvolutionAuthor {
         return publicationsEachYear;
     }
 
-    private HashMap<Integer,Double> combineHashMaps(ArrayList<HashMap<Integer,Double>> all){
-         HashMap<Integer,Double> averagePublications = new HashMap<>();
+    private HashMap<Integer, Double> combineNumberOfPublications(ArrayList<HashMap<Integer, Double>> all) {
+        HashMap<Integer, Double> averagePublications = new HashMap<>();
 
         // Merge all individual publications a year to one for all authors
-        for (HashMap <Integer,Double> person : all){
+        for (HashMap<Integer, Double> person : all) {
             person.forEach((k, v) -> averagePublications.merge(k, v, (v1, v2) -> v1 + v2));
         }
 
 
         // Calculate average
-        for(Map.Entry<Integer, Double> e : averagePublications.entrySet()) {
+        for (Map.Entry<Integer, Double> e : averagePublications.entrySet()) {
             averagePublications.put(e.getKey(), (e.getValue() / all.size()));
         }
-
-
         return averagePublications;
     }
 
+    private HashMap<Integer, Integer> combineNumberOfPublicationsASeason(List<HashMap<Integer, Integer>> all) {
+        HashMap<Integer, Integer> averagePublications = new HashMap<>();
 
-    public void createAveragesGraph (int [] persons) throws Exception {
+        // Merge all individual publications a year to one for all authors
+        for (HashMap<Integer, Integer> person : all) {
+            person.forEach((k, v) -> averagePublications.merge(k, v, (v1, v2) -> v1 + v2));
+        }
+        return averagePublications;
+    }
 
-        HashMap<Integer,Double> combinedHashMap = getAverage(persons);
+    public void createAveragesGraph() throws Exception {
+
+        HashMap<Integer, Double> combinedHashMap = getAverage(persons);
         List<Double> times = new ArrayList<>();
         List<Double> averages = new ArrayList();
-        System.out.println(combinedHashMap);
-        for (int i = 1; i <= combinedHashMap.size(); i++){
-            System.out.println("loop");
+
+        for (int i = 1; i <= combinedHashMap.size(); i++) {
             times.add((double) i);
             averages.add(combinedHashMap.get(i));
         }
-        System.out.println(averages);
-        XChart averageChart = new XChart("Averages per year", "Relative time(years)","Number of publications");
-        averageChart.addDoubleSeries("Averages per year",times,averages);
+
+        XChart averageChart = new XChart("Averages per year", "Relative time(years)", "Number of publications");
+        averageChart.addDoubleSeries("Averages per year", times, averages);
         averageChart.showGraph();
     }
 
-    public HashMap<Integer,Double> getAverage(int[] persons) throws Exception {
+    public HashMap<Integer, Double> getAverage(int[] persons) throws Exception {
         for (Integer person : persons) {
-            allPublications.add(getNumberOfPublicationPerYear(retrievePublicationsForPerson(person)));
+            allPublications.add(getNumberOfPublicationPerYear(retrievePublicationsForPerson(person, true)));
         }
-        return combineHashMaps(allPublications);
+        return combineNumberOfPublications(allPublications);
+    }
+
+    public String getSeason(Date date) {
+        return seasons[date.getMonth()];
+    }
+
+    private HashMap<Integer, Integer> getNumberOfPublicationPerSeasonPerPerson(List<Double> publications) {
+        List<Date> publicationsPerDate = transferToDate(publications);
+
+        HashMap<Integer, Integer> publicationsPerSeason = new HashMap<>();
+
+
+        while (!publicationsPerDate.isEmpty()) {
+            Date date = publicationsPerDate.get(0);
+            String season = getSeason(date);
+
+            switch (season) {
+                case "Winter":
+                    if (publicationsPerSeason.containsKey(0)) {
+                        publicationsPerSeason.put(0, publicationsPerSeason.get(0) + 1);
+                    } else {
+                        publicationsPerSeason.put(0, 1);
+                    }
+                    break;
+                case "Spring":
+                    if (publicationsPerSeason.containsKey(1)) {
+                        publicationsPerSeason.put(1, publicationsPerSeason.get(1) + 1);
+                    } else {
+                        publicationsPerSeason.put(1, 1);
+                    }
+                    break;
+                case "Summer":
+                    if (publicationsPerSeason.containsKey(2)) {
+                        publicationsPerSeason.put(2, publicationsPerSeason.get(2) + 1);
+                    } else {
+                        publicationsPerSeason.put(2, 1);
+                    }
+                    break;
+                case "Fall":
+                    if (publicationsPerSeason.containsKey(3)) {
+                        publicationsPerSeason.put(3, publicationsPerSeason.get(3) + 1);
+                    } else {
+                        publicationsPerSeason.put(3, 1);
+                    }
+                    break;
+            }
+
+            publicationsPerDate.remove(0);
+        }
+        return publicationsPerSeason;
+    }
+
+    public void getNumberOfPublicationsPerSeasonPie() throws Exception {
+        List<HashMap<Integer, Integer>> all = new ArrayList<>();
+        for (Integer person : persons) {
+            all.add(getNumberOfPublicationPerSeasonPerPerson(retrievePublicationsForPerson(person, false)));
+        }
+        HashMap<Integer, Integer> combined = combineNumberOfPublicationsASeason(all);
+
+        PieChart chart = new PieChart("Seasons");
+        chart.addData("Winter", combined.get(0));
+        chart.addData("Spring", combined.get(1));
+        chart.addData("Summer", combined.get(2));
+        chart.addData("Fall", combined.get(3));
+        chart.createDemoPanel();
     }
 }
 

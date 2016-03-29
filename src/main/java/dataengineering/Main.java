@@ -13,13 +13,16 @@ public class Main {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // input parser
-        ParseInput input = new ParseInput("HepPh", env);
+        ParseInput input = new ParseInput("test", env);
 
         // Gelly graph
         Graphs graph = new Graphs(input, env);
+        System.out.println(graph.getGraph().numberOfVertices());
 
           // Community detection
-//        dataengineering.CommunityDetection cd = new dataengineering.CommunityDetection(graph);
+   //     dataengineering.CommunityDetection cd = new dataengineering.CommunityDetection(graph);
+
+
 
           // Visualize community detection
 //        GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges());
@@ -27,16 +30,15 @@ public class Main {
 //        gv.displayGraph();
 
         // Visualize publications per Author
-        EvolutionAuthor evolution = new EvolutionAuthor(true, graph);
+        EvolutionAuthor evolution = new EvolutionAuthor(graph,140);
 
-        int[] persons = {5,6,123,22233};
-        evolution.createGraph(persons);
-        //  evolution.setPersonsRandom(3);
-        
-        int[] randPersons = evolution.getRandomPersons(500);
+        int[] persons = {1,2};
+      // evolution.createGraph(persons);
 
-      //  evolution.createGraph(randPersons);
-        //  evolution.setPersonsRandom(3);
-        evolution.createAveragesGraph(randPersons);
-    }
+    //      evolution.createGraph(false);
+    //      evolution.createGraph(true);
+    //      evolution.createAveragesGraph();
+          evolution.getNumberOfPublicationsPerSeasonPie();
+       // evolution.testPie();
+         }
 }
