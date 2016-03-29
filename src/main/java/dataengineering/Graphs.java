@@ -76,7 +76,7 @@ public class Graphs {
         return graph.filterOnVertices(new FilterFunction<Vertex<Integer, Long>>() {
             @Override
             public boolean filter(Vertex<Integer, Long> integerNullValueVertex) throws Exception {
-                return integerNullValueVertex.;
+                return true;
             }
         });
     }
