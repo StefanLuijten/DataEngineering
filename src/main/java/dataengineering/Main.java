@@ -19,12 +19,10 @@ public class Main {
         Graphs graph = new Graphs(input, env);
         System.out.println(graph.getGraph().numberOfVertices());
 
-          // Community detection
-   //     dataengineering.CommunityDetection cd = new dataengineering.CommunityDetection(graph);
+        // Community detection evolution
+        CommunityDetectionEvolution cde = new CommunityDetectionEvolution(graph);
 
-
-
-          // Visualize community detection
+        // Visualize community detection
 //        GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges());
 //        gv.colorCommunities();
 //        gv.displayGraph();
@@ -33,12 +31,12 @@ public class Main {
         EvolutionAuthor evolution = new EvolutionAuthor(graph,140);
 
         int[] persons = {1,2};
-      // evolution.createGraph(persons);
+//        evolution.createGraph(persons);
 
-    //      evolution.createGraph(false);
-    //      evolution.createGraph(true);
-    //      evolution.createAveragesGraph();
-          evolution.getNumberOfPublicationsPerSeasonPie();
-       // evolution.testPie();
-         }
+//        evolution.createGraph(false);
+//        evolution.createGraph(true);
+//        evolution.createAveragesGraph();
+        evolution.getNumberOfPublicationsPerSeasonPie();
+//        evolution.testPie();
+    }
 }
