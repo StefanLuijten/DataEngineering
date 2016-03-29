@@ -27,15 +27,17 @@ public class Main {
         boolean _gv = true;
         if(_gv) {
             int i = 1;
-            for(dataengineering.CommunityDetection cd : cde.getCommunityDetections()) {
+            for(dataengineering.CommunityDetection cd : cde.getCommunityDetectionsCollected()) {
                 GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges(), Integer.toString(i));
                 gv.colorCommunities();
                 gv.displayGraph();
-                i++;
 
                 // Wait for user input
                 Scanner s = new Scanner(System.in);
                 s.nextLine();
+
+                i++;
+
             }
         }
 

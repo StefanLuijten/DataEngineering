@@ -32,6 +32,14 @@ public class CommunityDetectionEvolution {
         return cds;
     }
 
+    public ArrayList<dataengineering.CommunityDetection> getCommunityDetectionsCollected() throws Exception {
+        for(dataengineering.CommunityDetection cd : cds) {
+            cd.getVertices();
+            cd.getEdges();
+        }
+        return cds;
+    }
+
     private void printStats() throws Exception {
         int i = 1;
         for(dataengineering.CommunityDetection cd : cds) {

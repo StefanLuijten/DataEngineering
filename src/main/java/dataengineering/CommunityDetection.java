@@ -16,6 +16,8 @@ public class CommunityDetection {
     private HashMap<Long, Integer> community_map = new HashMap<Long, Integer>();
     private long vertices;
     private long edges;
+    private List<Vertex<Integer, Long>> vertices2;
+    private List<Edge<Integer, Double>> edges2;
 
     public CommunityDetection(Graphs graph) throws Exception {
 
@@ -58,11 +60,17 @@ public class CommunityDetection {
     }
 
     public List<Vertex<Integer, Long>> getVertices() throws Exception {
-        return result.getVertices().collect();
+        if(vertices2 == null) {
+            this.vertices2 = result.getVertices().collect();
+        }
+        return vertices2;
     }
 
     public List<Edge<Integer, Double>> getEdges() throws Exception {
-        return result.getEdges().collect();
+        if(edges2 == null) {
+            this.edges2 = result.getEdges().collect();
+        }
+        return edges2;
     }
 
 }
