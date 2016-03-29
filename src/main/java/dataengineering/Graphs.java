@@ -94,7 +94,7 @@ public class Graphs {
     }
 
     // return an arraylist with subgraphs per year
-    public ArrayList<Graphs> getSubgraphPerYearArray() throws Exception {
+    public ArrayList<Graphs> getSubgraphPerTimeArray(int time, int limit) throws Exception {
         // Reduce to min edge per vertex
         DataSet<Tuple2<Integer, Double>> minWeights = graph.reduceOnEdges(new SelectMinWeight(), EdgeDirection.ALL);
         // reduce to lowest edge overall
@@ -102,9 +102,9 @@ public class Graphs {
         long minWeight = Math.round(reducedMinWeights.collect().get(0).f1);
 
         ArrayList<Graphs> subgraphs = new ArrayList<>();
-        for(int i = 1; i < 9; i++) {
+        for(int i = 1; i <= limit; i++) {
             // create acculumative subgraphs for each year
-            subgraphs.add(new Graphs(getSubgraphUntilTimestamp(minWeight + (i*31556926))));
+            subgraphs.add(new Graphs(getSubgraphUntilTimestamp(minWeight + (i*time))));
         }
         return subgraphs;
     }

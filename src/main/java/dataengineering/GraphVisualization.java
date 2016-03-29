@@ -18,16 +18,18 @@ import java.util.Random;
  */
 public class GraphVisualization {
 
-    private HashMap<Long, String> colors = new HashMap<Long, String>();
+    private static HashMap<Long, String> colors = new HashMap<Long, String>();
     private static Graph graph = new SingleGraph("Tutorial 1");
     private List<Vertex<Integer, Long>> verticeSet;
+    private static boolean displaying = false;
 
-    public GraphVisualization(List<Vertex<Integer, Long>> verticeSet, List<Edge<Integer, Double>> edgeSet) throws Exception {
+    public GraphVisualization(List<Vertex<Integer, Long>> verticeSet, List<Edge<Integer, Double>> edgeSet, String title) throws Exception {
 
         this.verticeSet = verticeSet;
 
         // Set graph renderer to use CSS
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+        graph.addAttribute("ui.title", title);
 
         System.out.println("Mapping...");
 
@@ -46,7 +48,7 @@ public class GraphVisualization {
         }
         for(Edge<Integer, Double> tuple: edgeSet) {
             try {
-                graph.addEdge((tuple.f0.toString()+tuple.f1.toString()), tuple.f0.toString(), tuple.f1.toString());
+                graph.addEdge((tuple.f0.toString()+";"+tuple.f1.toString()), tuple.f0.toString(), tuple.f1.toString());
                 j++;
             } catch(Exception e) {}
 
@@ -65,7 +67,10 @@ public class GraphVisualization {
     }
 
     public void displayGraph() {
-        graph.display();
+        if(!displaying) {
+            graph.display();
+            displaying = true;
+        }
     }
 
     public void colorCommunities() {

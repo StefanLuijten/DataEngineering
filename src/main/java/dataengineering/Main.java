@@ -2,6 +2,8 @@ package dataengineering;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
 
+import java.util.Scanner;
+
 /**
  * Created by Stefan on 01-Mar-16.
  */
@@ -19,14 +21,22 @@ public class Main {
         Graphs graph = new Graphs(input, env);
 
         // Community detection evolution
-        CommunityDetectionEvolution cd = new CommunityDetectionEvolution(graph);
+        CommunityDetectionEvolution cde = new CommunityDetectionEvolution(graph);
 
         // Visualize community detection
-        boolean _gv = false;
+        boolean _gv = true;
         if(_gv) {
-            GraphVisualization gv = new GraphVisualization(cd.getCommunityDetection().getVertices(), cd.getCommunityDetection().getEdges());
-            gv.colorCommunities();
-            gv.displayGraph();
+            int i = 1;
+            for(dataengineering.CommunityDetection cd : cde.getCommunityDetections()) {
+                GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges(), Integer.toString(i));
+                gv.colorCommunities();
+                gv.displayGraph();
+                i++;
+
+                // Wait for user input
+                Scanner s = new Scanner(System.in);
+                s.nextLine();
+            }
         }
 
         // Visualize publications per Author
