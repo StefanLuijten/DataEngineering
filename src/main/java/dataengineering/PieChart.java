@@ -41,7 +41,7 @@ public class PieChart extends ApplicationFrame {
                 true,
                 false);
         final PiePlot plot1 = (PiePlot) chart.getPlot();
-        PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0} = {1}");
+        PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0}: {1} ({2})");
 
         StandardPieToolTipGenerator stip = new StandardPieToolTipGenerator(
                 "{0}={2}",
@@ -49,11 +49,7 @@ public class PieChart extends ApplicationFrame {
                 new DecimalFormat("0%"));
         plot1.setToolTipGenerator(stip);
 
-        StandardPieSectionLabelGenerator slbl = new StandardPieSectionLabelGenerator(
-                "{0}={2}",
-                new DecimalFormat("#,##0"),
-                new DecimalFormat("0%"));
-        plot1.setLabelGenerator(slbl);
+        plot1.setLabelGenerator(labelGenerator);
         return chart;
     }
 
