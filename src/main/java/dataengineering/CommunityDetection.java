@@ -22,7 +22,7 @@ public class CommunityDetection {
     public CommunityDetection(Graphs graph) throws Exception {
 
         // Max number op hops: 1, Delta: 0.5
-        result = graph.getGraph().run(new org.apache.flink.graph.library.CommunityDetection<Integer>(1, 0.5));
+        result = graph.getGraph().run(new org.apache.flink.graph.library.CommunityDetection<Integer>(10, 0.5));
 
     }
 

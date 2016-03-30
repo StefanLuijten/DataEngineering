@@ -15,29 +15,36 @@ public class Main {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // input parser
-        ParseInput input = new ParseInput("HepPh", env);
+        ParseInput input = new ParseInput("test", env);
 
         // Gelly graph
         Graphs graph = new Graphs(input, env);
 
         // Community detection evolution
         CommunityDetectionEvolution cde = new CommunityDetectionEvolution(graph);
+        cde.runPerMonth(12*4);
 
         // Visualize community detection
         boolean _gv = true;
         if(_gv) {
-            int i = 1;
-            for(dataengineering.CommunityDetection cd : cde.getCommunityDetectionsCollected()) {
-                GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges(), Integer.toString(i));
-                gv.colorCommunities();
-                gv.displayGraph();
+            while(true) {
+                int i = 1;
+                for (dataengineering.CommunityDetection cd : cde.getCommunityDetections()) {
+                    boolean reset = false;
+                    if(i == 1) {
+                        reset = true;
+                    }
+                    GraphVisualization gv = new GraphVisualization(cd.getVertices(), cd.getEdges(), Integer.toString(i), reset);
+                    gv.colorCommunities();
+                    gv.displayGraph();
 
-                // Wait for user input
-                Scanner s = new Scanner(System.in);
-                s.nextLine();
+                    // Wait for user input
+                    Scanner s = new Scanner(System.in);
+                    s.nextLine();
 
-                i++;
+                    i++;
 
+                }
             }
         }
 

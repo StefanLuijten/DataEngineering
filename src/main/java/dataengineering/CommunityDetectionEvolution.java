@@ -15,9 +15,12 @@ public class CommunityDetectionEvolution {
     public CommunityDetectionEvolution(Graphs graph) throws Exception {
 
         this.graph = graph;
+    }
+
+    private void run(int split, int times) throws Exception {
         // month = 2629743
         // year = 31556926
-        this.subgraphPerYearArray = graph.getSubgraphPerTimeArray(2629743, 12);
+        this.subgraphPerYearArray = graph.getSubgraphPerTimeArray(split, times);
 
         for(Graphs graph2 : subgraphPerYearArray) {
             // Community detection
@@ -26,6 +29,14 @@ public class CommunityDetectionEvolution {
             cds.add(cd);
         }
         printStats();
+    }
+
+    public void runPerMonth(int times) throws Exception {
+        run(2629743, times);
+    }
+
+    public void runPerYear(int times) throws Exception {
+        run(31556926, times);
     }
 
     public ArrayList<dataengineering.CommunityDetection> getCommunityDetections() {

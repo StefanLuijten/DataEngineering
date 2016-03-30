@@ -23,7 +23,10 @@ public class GraphVisualization {
     private List<Vertex<Integer, Long>> verticeSet;
     private static boolean displaying = false;
 
-    public GraphVisualization(List<Vertex<Integer, Long>> verticeSet, List<Edge<Integer, Double>> edgeSet, String title) throws Exception {
+    public GraphVisualization(List<Vertex<Integer, Long>> verticeSet, List<Edge<Integer, Double>> edgeSet, String title, boolean reset) throws Exception {
+        if(reset) {
+            graph.clear();
+        }
 
         this.verticeSet = verticeSet;
 
@@ -84,6 +87,7 @@ public class GraphVisualization {
             } else {
                 community_map.put(c, 1);
             }
+            graph.getNode(vertex.getId().toString()).removeAttribute("ui.style");
             graph.getNode(vertex.getId().toString()).addAttribute("ui.style", "fill-color: " + getCommunityColor(c) +";");
         }
 
